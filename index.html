@@ -1,0 +1,585 @@
+<html>
+   <head>
+      <title>D3 custom Circle pack</title>
+      <meta charset="utf-8"/>
+      <meta name="description" content="A zoomable d3 circle pack wth custom charts in leaf node">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://d3js.org/d3.v4.min.js"></script>
+      <link rel="shortcut icon" href="http://www.vinodlouis.com/icon/favicon.ico"/>
+      <style>
+         .node {
+         cursor: pointer;
+         }
+         .node:hover {
+         stroke: #000;
+         stroke-width: 1.5px;
+         }
+         .node--leaf {
+         fill: white;
+         }
+         .label {
+         font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+         text-anchor: middle;
+         text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+         }
+         .label,
+         .node--root,
+         .node--leaf {
+         pointer-events: none;
+         }
+      </style>
+   </head>
+   <div id="new-application">
+      <svg width="600" height="600" style="display:block;margin:auto;border: 3px solid #b3b3b3"></svg>
+   </div>
+   <script type="text/javascript">
+      var test = {
+        "products": {
+          "electronics":{
+            "mobiles":{
+              "samsung":{
+                "sun" : 83,
+                "mon" : 52,
+                "tue" : 47,
+                "wed" : 87,
+                "thu" : 32,
+                "fri" : 12,
+                "sat" : 65
+              },
+              "nokia":{
+                "sun" : 83,
+                "mon" : 34,
+                "tue" : 24,
+                "wed" : 43,
+                "thu" : 65,
+                "fri" : 34,
+                "sat" : 67
+              },
+              "apple":{
+                "sun" : 68,
+                "mon" : 26,
+                "tue" : 37,
+                "wed" : 45,
+                "thu" : 12,
+                "fri" : 92,
+                "sat" : 46
+              },
+              "sony":{
+                "sun" : 92,
+                "mon" : 29,
+                "tue" : 46,
+                "wed" : 76,
+                "thu" : 43,
+                "fri" : 56,
+                "sat" : 21
+              },
+              "oppo":{
+                "sun" : 101,
+                "mon" : 90,
+                "tue" : 32,
+                "wed" : 87,
+                "thu" : 54,
+                "fri" : 32,
+                "sat" : 54
+              },
+              "mi":{
+                "sun" : 87,
+                "mon" : 65,
+                "tue" : 13,
+                "wed" : 67,
+                "thu" : 23,
+                "fri" : 45,
+                "sat" : 32
+              }
+            },
+            "laptops":{
+              "dell":{
+                "sun" : 70,
+                "mon" : 43,
+                "tue" : 30,
+                "wed" : 54,
+                "thu" : 87,
+                "fri" : 43,
+                "sat" : 98
+              },
+              "apple":{
+                "sun" : 170,
+                "mon" : 99,
+                "tue" : 112,
+                "wed" : 176,
+                "thu" : 78,
+                "fri" : 150,
+                "sat" : 130
+              },
+              "lenovo":{
+                "sun" : 75,
+                "mon" : 42,
+                "tue" : 38,
+                "wed" : 35,
+                "thu" : 8,
+                "fri" : 3,
+                "sat" : 17
+              },
+              "acer":{
+                "sun" : 12,
+                "mon" : 56,
+                "tue" : 87,
+                "wed" : 36,
+                "thu" : 88,
+                "fri" : 21,
+                "sat" : 89
+              }
+            },
+            "camera":{
+              "sony":{
+                "sun" : 35,
+                "mon" : 65,
+                "tue" : 37,
+                "wed" : 64,
+                "thu" : 38,
+                "fri" : 69,
+                "sat" : 48
+              },
+              "samsung":{
+                "sun" : 87,
+                "mon" : 15,
+                "tue" : 65,
+                "wed" : 48,
+                "thu" : 69,
+                "fri" : 74,
+                "sat" : 36
+              },
+              "nikon":{
+                "sun" : 74,
+                "mon" : 96,
+                "tue" : 74,
+                "wed" : 51,
+                "thu" : 76,
+                "fri" : 64,
+                "sat" : 55
+              }
+            },
+            "television":{
+              "sony":{
+                "sun" : 46,
+                "mon" : 87,
+                "tue" : 121,
+                "wed" : 87,
+                "thu" : 90,
+                "fri" : 99,
+                "sat" : 111
+              },
+              "lg":{
+                "sun" : 174,
+                "mon" : 99,
+                "tue" : 48,
+                "wed" : 69,
+                "thu" : 57,
+                "fri" : 48,
+                "sat" : 60
+              },
+              "samsung":{
+                "sun" : 123,
+                "mon" : 178,
+                "tue" : 49,
+                "wed" : 88,
+                "thu" : 67,
+                "fri" : 73,
+                "sat" : 50
+              }
+            }
+          },
+          "applinaces":{
+            "kitchen":{
+              "induction":{
+                "prestige":{
+                  "sun" : 87,
+                  "mon" : 145,
+                  "tue" : 98,
+                  "wed" : 82,
+                  "thu" : 76,
+                  "fri" : 68,
+                  "sat" : 88
+                },
+                "philips":{
+                  "sun" : 91,
+                  "mon" : 80,
+                  "tue" : 77,
+                  "wed" : 65,
+                  "thu" : 58,
+                  "fri" : 78,
+                  "sat" : 87
+                }
+              },
+              "grinders":{
+                "preethi":{
+                  "sun" : 64,
+                  "mon" : 74,
+                  "tue" : 58,
+                  "wed" : 54,
+                  "thu" : 47,
+                  "fri" : 87,
+                  "sat" : 57
+                },
+                "butterfly":{
+                  "sun" : 98,
+                  "mon" : 101,
+                  "tue" : 57,
+                  "wed" : 34,
+                  "thu" : 64,
+                  "fri" : 42,
+                  "sat" : 25
+               }
+              }
+            },
+            "refrigerator":{
+              "samsung":{
+                  "sun" : 98,
+                  "mon" : 101,
+                  "tue" : 57,
+                  "wed" : 34,
+                  "thu" : 64,
+                  "fri" : 42,
+                  "sat" : 25
+              },
+              "lg":{
+                  "sun" : 74,
+                  "mon" : 10,
+                  "tue" : 78,
+                  "wed" : 48,
+                  "thu" : 57,
+                  "fri" : 98,
+                  "sat" : 75
+              },
+              "kelvinator":{
+                  "sun" : 44,
+                  "mon" : 28,
+                  "tue" : 39,
+                  "wed" : 18,
+                  "thu" : 72,
+                  "fri" : 49,
+                  "sat" : 57
+              }
+            },
+            "ac":{
+              "voltas":{
+                "sun" : 44,
+                  "mon" : 87,
+                  "tue" : 64,
+                  "wed" : 48,
+                  "thu" : 81,
+                  "fri" : 57,
+                  "sat" : 68
+              },
+              "samsung":{
+                "sun" : 103,
+                  "mon" : 75,
+                  "tue" : 66,
+                  "wed" : 48,
+                  "thu" : 52,
+                  "fri" : 33,
+                  "sat" : 28
+              }
+            }
+          },
+          "books":{
+            "fiction":{
+              "mcs":{
+                "sun" : 103,
+                  "mon" : 75,
+                  "tue" : 66,
+                  "wed" : 48,
+                  "thu" : 52,
+                  "fri" : 33,
+                  "sat" : 28
+              },
+              "hill":{
+                "sun" : 98,
+                  "mon" : 101,
+                  "tue" : 57,
+                  "wed" : 34,
+                  "thu" : 64,
+                  "fri" : 42,
+                  "sat" : 25
+              }
+            },
+            "academics":{
+              "greenwood":{
+                "sun" : 100,
+                  "mon" : 60,
+                  "tue" : 74,
+                  "wed" : 85,
+                  "thu" : 72,
+                  "fri" : 68,
+                  "sat" : 48
+              },
+              "longisland":{
+                "sun" : 98,
+                  "mon" : 85,
+                  "tue" : 92,
+                  "wed" : 80,
+                  "thu" : 77,
+                  "fri" : 67,
+                  "sat" : 28
+              }
+            }
+          }
+        }  
+      };
+      
+      var newData = {
+      name:"products",
+      children:[]
+      };
+      nestObj(test.products,newData)
+      function nestObj(obj,par){
+        for(var prop in obj){
+          if(typeof obj[prop] == "object"){
+            par.children.push(
+              {
+                name : prop,
+                children: []
+              }
+            );
+            nestObj(obj[prop],par.children[par.children.length-1]);
+          }else{
+            par.children.push(
+              {
+                name : prop,
+                size: obj[prop]
+              }
+            );
+          } 
+        }
+      }
+      
+      //console.log(JSON.stringify(newData));
+      
+      //set margin  
+      var svg = d3.select("svg"),
+        margin = 10,
+        width = +svg.attr("width") - margin - margin,
+        height = +svg.attr("height") - margin - margin;
+      
+      //set size for rendering
+      var diameter = +svg.attr("width"),
+        g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+      
+      //color for circle  
+      var color = d3.scaleLinear()
+        .domain([-1, 15])
+        .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+        .interpolate(d3.interpolateHcl);
+      
+      //color for bars  
+      var colorBar = d3.scaleLinear()
+        .domain([-1, 7])
+        .range(["hsl(0, 100%, 50%)", "hsl(0, 100%, 80%)"])
+        .interpolate(d3.interpolateHcl);  
+      
+      //initiate circle pack  
+      var pack = d3.pack()
+        .size([diameter - margin, diameter - margin])
+        .padding(2);
+      
+      var root = newData;
+      root = d3.hierarchy(root)
+        .sum(function(d) {
+          return d.size;
+        });
+        
+      var focus = root,
+        nodes = pack(root).descendants(),
+        view;
+      
+      var circle = g.selectAll("circle")
+        .data(nodes.filter(function(d) {
+          return d.height > 0
+        }))
+        .enter().append("circle")
+        .attr("class", function(d) {
+          return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root";
+        })
+        .style("fill", function(d) {
+          return d.children ? color(d.depth) : null;
+        })
+        .on("click", function(d) {
+          if (focus !== d) {
+            if (d.children) {
+              zoom(d, this), d3.event.stopPropagation();
+            }
+          }
+        });
+      
+      //platform to draw charts
+      var leaf = g.selectAll(".bars")
+        .data(nodes.filter(function(d) {
+          //get all leaf node data
+          return d.height == 1
+        }))
+        .enter()
+        .append("g")
+        .attr("id", (d) => d.parent.data.name+"_"+d.data.name)
+        .attr("height", function(d) {
+          return d.x + d.r
+        })
+        .attr("width", function(d) {
+          return d.y + d.r
+        })
+        .attr("class", "bars")
+        .each(function(d) {
+          drawBarData(this, this.__data__, d);
+        });
+      
+      var text = g.selectAll(".label")
+        .data(nodes.filter(function(d) {
+          return d.height > 0
+        }))
+        .enter().append("text")
+        .attr("class", "label")
+        .style("fill-opacity", function(d) {
+          return d.parent === root ? 1 : 0;
+        })
+        .style("display", function(d) {
+          return d.parent === root ? "inline" : "none";
+        })
+        .text(function(d) {
+          return d.data.name;
+        });
+      
+      var node = g.selectAll("circle,.bars,.label");
+      
+      svg
+        .style("background", color(-1))
+        .on("click", function() {
+          zoom(root, this);
+        });
+      
+      zoomTo([root.x, root.y, root.r * 2 + margin]);
+      
+      function zoom(d, ele) {
+        var focus0 = focus;
+        focus = d;
+        var transition = d3.transition()
+          .duration(d3.event.altKey ? 7500 : 750)
+          .tween("zoom", function(d) {
+            var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+            return function(t) {
+              zoomTo(i(t), focus, ele);
+            };
+          });
+      
+        transition.selectAll(".label")
+          .filter(function(d) {
+            return d.parent === focus || this.style.display === "inline";
+          })
+          .style("fill-opacity", function(d) {
+            return d.parent === focus ? 1 : 0;
+          })
+          .on("start", function(d) {
+            if (d.parent === focus) this.style.display = "inline";
+          })
+          .on("end", function(d) {
+            if (d.parent !== focus) this.style.display = "none";
+          });
+      }
+      
+      function zoomTo(v, focus, ele) {
+        var k = diameter / v[2];
+        view = v;
+        node.attr("transform", function(d) {
+          return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")";
+        });
+      
+        circle.attr("r", function(d) {
+          if (d && d.height == 1) {
+            setTimeout(function() {
+              //reste bar charts
+              drawBarData("", d, d, d.r * k);
+            }, 0)
+          }
+          return d.r * k;
+        });
+      
+      }
+      
+      //ele : The g element
+      //data : data for which we need to draw chart
+      //d : high level pack data(just in case if we need)
+      //zoomRadius : Its used under condition when we zoom-in/zoom-out
+      function drawBarData(ele, data, d, zoomRadius) {
+        if (!data && !data.parent)
+          return;
+        
+        var rectwidth = (zoomRadius) ? zoomRadius : d.r;
+        var rectheight = rectwidth;
+        var maxDataPoint = d3.max(data.data.children, function(d) {
+          return d.size
+        });
+      
+        var linearScale = d3.scaleLinear()
+          .domain([0, maxDataPoint])
+          .range([0, rectheight]);
+      
+        var x = d3.scaleBand()
+          .range([0, rectwidth])
+          .padding(0.1);
+      
+        var y = d3.scaleLinear()
+          .range([rectheight, 0]);
+      
+        // Scale the range of the data in the domains
+        x.domain(data.data.children.map(function(d) {
+          return d.name;
+        }));
+        y.domain([0, d3.max(data.data.children, function(d) {
+          return d.size;
+        })]);
+      
+        $("#" + data.parent.data.name+"_"+data.data.name).html("");
+        var bg = d3.select("#" + data.parent.data.name+"_"+data.data.name).append("g")
+          .attr("class", "chart-wrapper")
+          .attr("transform", function(d) {
+            return "translate(" + -rectwidth / 2 + "," + -rectwidth / 2 + ")";
+          });
+      
+          bg.selectAll(".bar")
+          .data(data.data.children)
+          .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", function(d) {
+            return x(d.name);
+          })
+          .attr("width", x.bandwidth())
+          .attr("y", function(d) {
+            return y(d.size);
+          })
+          .attr("height", function(d) {
+            return rectheight - y(d.size);
+          })
+          .attr("fill",(d,i)=>colorBar(i))
+          .append("svg:title")
+          .text((d)=>d.name + ' : sold pieces ' +d.size)
+          
+        //just a safe check to render axis only if we have space  
+        if(rectheight > 100){
+          bg.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + rectheight + ")")
+          .call(d3.axisBottom(x))
+          .selectAll("text")
+          .attr("y", 0)
+          .attr("x", -10)
+          .attr("dy", ".35em")
+          .attr("transform", "rotate(-90)")
+          .style("text-anchor", "end");
+      
+          bg.append("g")
+          .attr("class", "axis axis--y")
+          .call(d3.axisLeft(y))  
+          
+        }  
+        
+         
+      }
+   </script>
